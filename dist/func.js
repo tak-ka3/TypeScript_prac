@@ -124,4 +124,35 @@
         }
     };
 }
+{
+}
+{
+    function map(array, f) {
+        let results = [];
+        for (let i = 0; i < array.length; i++) {
+            results[i] = f(array[i]);
+        }
+        return results;
+    }
+}
+{
+    function triggerEvent(event) {
+        //...
+    }
+    triggerEvent({
+        target: document.querySelector('#myButton'),
+        type: 'mouseover'
+    });
+}
+{
+    let a = { value: 'a' };
+    let b = { value: 'b', isLeaf: true };
+    let c = { value: 'c', childlen: [b] };
+    let a1 = mapNode(a, _ => _.toUpperCase());
+    let b1 = mapNode(b, _ => _.toUpperCase());
+    let c1 = mapNode(c, _ => _.toUpperCase());
+    function mapNode(node, f) {
+        return Object.assign(Object.assign({}, node), { value: f(node.value) });
+    }
+}
 //# sourceMappingURL=func.js.map
