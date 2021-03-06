@@ -115,4 +115,13 @@
     })(Language || (Language = {}));
     console.log(Language.Spanish);
 }
+{
+    let a = 0 /* English */;
+    function flip(f) {
+        return 'flipped it';
+    }
+    flip(1 /* Chair */);
+    flip(12); // これでもエラーが出ない！
+    // これを防ぐために、最初から文字列の値をFlippableを定義する段階で代入するべき！
+}
 //# sourceMappingURL=index.js.map
