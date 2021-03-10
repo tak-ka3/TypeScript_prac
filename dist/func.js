@@ -155,4 +155,9 @@
         return Object.assign(Object.assign({}, node), { value: f(node.value) });
     }
 }
+{
+    function call(f, ...args) {
+        return f(...args);
+    }
+}
 //# sourceMappingURL=func.js.map
