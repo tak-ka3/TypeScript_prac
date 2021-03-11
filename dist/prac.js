@@ -1,6 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const process_1 = require("process");
+const node_fetch_1 = require("node-fetch");
 {
     class Person {
         constructor(name) {
@@ -92,5 +93,32 @@ const process_1 = require("process");
             super(100, 'fps', '2203');
         }
     }
+}
+// コールバック関数だけで書く場合（非同期処理が原因で順番が思った通りに行かない）
+{
+    const url = 'https://api.github.com/users/tak-ka3';
+    const fetchProfileCallback = () => {
+        fetch.default(url)
+            .then((res) => {
+            res
+                .json()
+                .then((json) => {
+                console.log('Asynchronous Callback Sample 1:', json);
+                return json;
+            })
+                .catch((error) => {
+                console.error(error);
+                return null;
+            });
+        })
+            .catch((error) => {
+            console.error(error);
+            return null;
+        });
+    };
+    const profile = fetchProfileCallback();
+    // 非同期処理が完了していないのでPromise<pending>が表示される
+    // つまり本来この処理は非同期処理が終わってからやるようにしなければいけない
+    console.log('Asynchronous Callback Sample 2:', profile);
 }
 //# sourceMappingURL=prac.js.map
