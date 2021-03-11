@@ -1,4 +1,7 @@
 import { title } from "process";
+import fetch from 'node-fetch';
+import { rejects } from "assert";
+import { profile } from "console";
 
 {
 // インターフェース
@@ -117,5 +120,120 @@ class Manga extends Comic{
     super(100, 'fps', '2203')
   }
 }
+
+}
+
+// コールバック関数だけで書く場合（非同期処理が原因で順番が思った通りに行かない）
+{
+const url = 'https://api.github.com/users/tak-ka3'
+type Profile = {
+  login: string
+  id: number
+}
+type FetchProfile = () => void
+
+const fetchProfileCallback: FetchProfile = () => {
+  fetch(url)
+    .then((res) => {
+      res
+        .json()
+        .then((json: Profile) => {
+          console.log('Asynchronous Callback Sample 1:', json)
+          return json
+        })
+        .catch((error) => {
+          console.error(error)
+          return null
+        })
+    })
+    .catch((error) => {
+      console.error(error)
+      return null
+    })
+}
+const profile = fetchProfileCallback()
+// 非同期処理が完了していないのでPromise<pending>が表示される
+// つまり本来この処理は非同期処理が終わってからやるようにしなければいけない
+console.log('Asynchronous Callback Sample 2:', profile)
+
+
+
+}
+
+{
+const url = 'https://api.github.com/users/tak-ka3'
+type Profile = {
+  login: string
+  id: number
+}
+type FetchProfile = () => Promise<Profile | null>
+
+const fetchProfilePromise: FetchProfile = () => {
+  return new Promise((resolve, reject) => {
+    fetch(url)
+      .then((res) => {
+        res
+          .json()
+          .then((json: Profile) => {
+            console.log('Asynchronous 1:', json)
+            resolve(json)
+          })
+          .catch((error) => {
+            console.error(error)
+            reject(null)
+          })
+      })
+      .catch((error) => {
+        console.error(error)
+        reject(null)
+      })
+  })
+}
+fetchProfilePromise().then((profile: Profile| null) => {
+  if (profile){
+    console.log('Asynchronous 2', profile)
+  }
+})
+
+const fetchProfile: FetchProfile = async () => {
+  const response = await fetch(url)
+    .then((response) => response)
+    .catch((error) => {
+      console.error(error)
+      return null
+    })
+
+    if (!response){
+      return null
+    }
+
+    const json = await response
+      .json()
+      .then((json: Profile) => {
+        console.log('Asynchronous 1:', json)
+        return json
+      })
+      .catch((error) => {
+        console.error(error)
+        return null
+      })
+    if (!json){
+      return null
+    }
+    return json
+}
+fetchProfile().then((profile: Profile | null) => {
+  if (profile){
+    console.log('Asynchronous 2:', profile)
+  }
+})
+// 本来このトップレベルの関数などにasyncをつけるべきだが、つけてないので、
+// 下のfetchProfile()にawaitをつけることができず、非同期的な処理がされる
+// つまり先に実行される
+const profile = fetchProfile()
+if (profile){
+  console.log('Asynchronous 3:', profile)
+}
+
 
 }
