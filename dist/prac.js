@@ -1,4 +1,13 @@
 "use strict";
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 const process_1 = require("process");
 const node_fetch_1 = require("node-fetch");
@@ -98,7 +107,7 @@ const node_fetch_1 = require("node-fetch");
 {
     const url = 'https://api.github.com/users/tak-ka3';
     const fetchProfileCallback = () => {
-        fetch.default(url)
+        node_fetch_1.default(url)
             .then((res) => {
             res
                 .json()
@@ -120,5 +129,71 @@ const node_fetch_1 = require("node-fetch");
     // 非同期処理が完了していないのでPromise<pending>が表示される
     // つまり本来この処理は非同期処理が終わってからやるようにしなければいけない
     console.log('Asynchronous Callback Sample 2:', profile);
+}
+{
+    const url = 'https://api.github.com/users/tak-ka3';
+    const fetchProfilePromise = () => {
+        return new Promise((resolve, reject) => {
+            node_fetch_1.default(url)
+                .then((res) => {
+                res
+                    .json()
+                    .then((json) => {
+                    console.log('Asynchronous 1:', json);
+                    resolve(json);
+                })
+                    .catch((error) => {
+                    console.error(error);
+                    reject(null);
+                });
+            })
+                .catch((error) => {
+                console.error(error);
+                reject(null);
+            });
+        });
+    };
+    fetchProfilePromise().then((profile) => {
+        if (profile) {
+            console.log('Asynchronous 2', profile);
+        }
+    });
+    const fetchProfile = () => __awaiter(void 0, void 0, void 0, function* () {
+        const response = yield node_fetch_1.default(url)
+            .then((response) => response)
+            .catch((error) => {
+            console.error(error);
+            return null;
+        });
+        if (!response) {
+            return null;
+        }
+        const json = yield response
+            .json()
+            .then((json) => {
+            console.log('Asynchronous 1:', json);
+            return json;
+        })
+            .catch((error) => {
+            console.error(error);
+            return null;
+        });
+        if (!json) {
+            return null;
+        }
+        return json;
+    });
+    fetchProfile().then((profile) => {
+        if (profile) {
+            console.log('Asynchronous 2:', profile);
+        }
+    });
+    // 本来このトップレベルの関数などにasyncをつけるべきだが、つけてないので、
+    // 下のfetchProfile()にawaitをつけることができず、非同期的な処理がされる
+    // つまり先に実行される
+    const profile = fetchProfile();
+    if (profile) {
+        console.log('Asynchronous 3:', profile);
+    }
 }
 //# sourceMappingURL=prac.js.map
